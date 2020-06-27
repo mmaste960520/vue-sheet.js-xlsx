@@ -63,6 +63,7 @@ export default {
   methods: {
     // 采集EXCEL数据
     async handle(ev) {
+      //  ev.raw是否选取文件
       let file = ev.raw;
       if (!file) return;
 
@@ -74,13 +75,16 @@ export default {
 
       await delay(100);
       //读取FILE中的数据（变为JSON格式）
-      let data = await readFile(file);
+      let data = await readFile(file);//这样的数据是二级制
+      // 读取二进制数据
       let workbook = xlsx.read(data, { type: "binary" }),
+        // 读取第一张表信息
         worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        //xlsx内置的方法  把读取到的数据转换成json格式
       data = xlsx.utils.sheet_to_json(worksheet);
 
-      //把读取出来的数据变为最后可以传递给服务器的数据（姓名：name  电话：phone）
-      let arr = [];
+      //把读取出来的数据变为最后可以传递给服务器的数据格式（姓名：name  电话：phone）
+      let arr = [];//[{},{}]
       data.forEach(item => {
         let obj = {};
         for (let key in character) {
